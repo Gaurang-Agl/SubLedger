@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# SQLite databases & local DB files
+*.sqlite
+*.sqlite3
+*.db
+subledger.db
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# IDE & Editor specific
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary & Personal Notes (Kept locally on system only, never pushed to Git)
+*notebook*
+*NOTEBOOK*
+*Notebook*
+GOOGLE_NOTEBOOK_GUIDE*
+internal_notes/
+*.txt
+!requirements.txt
