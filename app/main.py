@@ -1,11 +1,14 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.exceptions import NotFoundException, BusinessRuleException, ConflictException
 from app.db import Base, engine
+from app.db.session import get_db
 import app.models  # Ensures all models are registered with Base.metadata
 from app.routes import api_router
 
@@ -67,6 +70,13 @@ app.include_router(api_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["Health"])
-def health_check():
-    """Health check endpoint to verify backend operational readiness."""
-    return {"status": "healthy", "service": "SubLedger"}
+def health_check(db: Session = Depends(get_db)):
+    """Health check endpoint to verify backend and database operational readiness."""
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "healthy", "service": "SubLedger", "database": "connected"}
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "unhealthy", "service": "SubLedger", "database": str(e)}
+        )
