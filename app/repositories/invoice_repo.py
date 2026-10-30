@@ -7,8 +7,11 @@ class InvoiceRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_by_id(self, invoice_id: int) -> Optional[Invoice]:
-        return self.db.query(Invoice).filter(Invoice.id == invoice_id).first()
+    def get_by_id(self, invoice_id: int, for_update: bool = False) -> Optional[Invoice]:
+        query = self.db.query(Invoice).filter(Invoice.id == invoice_id)
+        if for_update:
+            query = query.with_for_update()
+        return query.first()
 
     def list(self, subscription_id: Optional[int] = None, customer_id: Optional[int] = None, skip: int = 0, limit: int = 100) -> List[Invoice]:
         query = self.db.query(Invoice)

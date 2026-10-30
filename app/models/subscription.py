@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, Index, column
 from sqlalchemy.orm import relationship
 from app.db import Base
 from app.core.enums import SubscriptionStatus
@@ -6,6 +6,16 @@ from app.core.enums import SubscriptionStatus
 
 class Subscription(Base):
     __tablename__ = "subscriptions"
+    __table_args__ = (
+        Index(
+            "uq_active_customer_plan",
+            "customer_id",
+            "plan_id",
+            unique=True,
+            postgresql_where=(column("status").in_(["ACTIVE", "active"])),
+            sqlite_where=(column("status").in_(["ACTIVE", "active"]))
+        ),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False, index=True)
